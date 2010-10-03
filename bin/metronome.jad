@@ -1,0 +1,8 @@
+MIDlet-1: metronome, metronome.png, Metronome
+MIDlet-Jar-Size: 100
+MIDlet-Jar-URL: metronome.jar
+MIDlet-Name: metronome
+MIDlet-Vendor: Unknown
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.1
