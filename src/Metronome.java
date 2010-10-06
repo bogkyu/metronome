@@ -16,6 +16,7 @@ implements CommandListener
 	Command stopCommand  = new Command(lbl_Stop , Command.SCREEN, 0) ;
 	Command exitCommand  = new Command("Exit"   , Command.EXIT  , 0) ;
 	TextField tick       = new TextField("Tick:", "", 5, TextField.NUMERIC);
+	int index_start_stop = 0 ;
 
 	private volatile boolean b_metronome_on = false ;
 
@@ -36,8 +37,9 @@ implements CommandListener
 		Display display = Display.getDisplay(this);
 		//Form 
 		f.addCommand(exitCommand);
+		index_start_stop = f.size() ;
 		f.addCommand(startCommand);
-		f.addCommand(stopCommand);
+		//f.addCommand(stopCommand);
 		tick.setString("") ;
 		tick.insert("60", 0 ) ;
 		f.append(tick) ;
@@ -56,9 +58,13 @@ implements CommandListener
 			Thread t = new Thread(new MetronomeThread(al_drum_setup)) ;
 			b_metronome_on = true ;
 			t.start() ;
+			f.removeCommand(startCommand) ;
+			f.addCommand(stopCommand);
 		} else if( label.equals(lbl_Stop)) {
 			b_metronome_on = false ;
 			//displayGUI() ;
+			f.removeCommand(stopCommand) ;
+			f.addCommand(startCommand);
 		}
 	}
 
