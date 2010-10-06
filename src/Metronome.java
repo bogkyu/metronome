@@ -11,48 +11,54 @@ implements CommandListener
 	private static final String lbl_Start = "Start" ;
 	private static final String lbl_Stop  = "Stop" ;
 	private Vector al_drum_setup ;
-	private Form f ;
+	private Form f = new Form("Metronome") ;
+	Command startCommand = new Command(lbl_Start, Command.SCREEN, 0) ;
+	Command stopCommand  = new Command(lbl_Stop , Command.SCREEN, 0) ;
+	Command exitCommand  = new Command("Exit"   , Command.EXIT  , 0) ;
+	TextField tick       = new TextField("Tick:", "", 5, TextField.NUMERIC);
 
 	private volatile boolean b_metronome_on = false ;
 
+	public Metronome() {
+		al_drum_setup = new Vector(10) ;
+	}
+
 	public void startApp(){
-		try {
-			// GUI
-			al_drum_setup = new Vector(10) ;
-			al_drum_setup.addElement(new DrumElement("/n.wav", "audio/x-wav", 1000L)) ;
-			Display display = Display.getDisplay(this);
-			//Form 
-			f = new Form("Metronome") ;
-			Command startCommand = new Command(lbl_Start, Command.SCREEN, 0) ;
-			Command stopCommand  = new Command(lbl_Stop , Command.SCREEN, 0) ;
-			Command exitCommand  = new Command("Exit"   , Command.EXIT  , 0) ;
-			f.addCommand(exitCommand);
-			f.addCommand(startCommand);
-			f.addCommand(stopCommand);
-			f.setCommandListener(this);
-			display.setCurrent(f) ;
-		} catch(IOException ioe) {
-			f.append(ioe.getMessage()) ;
-		} catch(MediaException me) {
-			f.append(me.getMessage()) ;
-		}
+		// GUI
+		displayGUI() ;
 	}
 
 	public void pauseApp(){}
 
 	public void destroyApp(boolean unconditional){}
 
+	private void displayGUI() {
+		Display display = Display.getDisplay(this);
+		//Form 
+		f.addCommand(exitCommand);
+		f.addCommand(startCommand);
+		f.addCommand(stopCommand);
+		tick.setString("") ;
+		tick.insert("60", 0 ) ;
+		f.append(tick) ;
+		f.setCommandListener(this);
+		display.setCurrent(f) ;
+	}
+
+	
 	public void commandAction(Command c, Displayable s) { 
 		if (c.getCommandType() == Command.EXIT) 
 			notifyDestroyed(); 
     	
 		String label = c.getLabel() ;
 	    if( label.equals(lbl_Start)) {
+			constructList() ;
 			Thread t = new Thread(new MetronomeThread(al_drum_setup)) ;
 			b_metronome_on = true ;
 			t.start() ;
 		} else if( label.equals(lbl_Stop)) {
 			b_metronome_on = false ;
+			//displayGUI() ;
 		}
 	}
 
@@ -94,13 +100,39 @@ implements CommandListener
 			while ( b_metronome_on ) {
 				for( int i=list.length; --i>=0 ; ) {
 					list[i].play() ;
-					f.append(".") ;
+					//f.append(".") ;
 					Thread.sleep(list[i].time()) ;
 				}
 			}
 			} catch (InterruptedException _) {
 				f.append(_.getMessage()) ;
+				_.printStackTrace() ;
 			}
 		}
+	}
+
+	private void constructList() {
+		try {
+			long t = Integer.parseInt(tick.getString()) ;
+			if( t <= 0L || 250L < t ) {
+				t = 60L ;
+				tick.setString("") ;
+				tick.insert("" + t, 0 ) ;
+			}
+			t = 60000L / t ;
+			al_drum_setup.removeAllElements() ;
+			al_drum_setup.addElement(new DrumElement("/n.wav" , "audio/x-wav", t)) ;
+			al_drum_setup.addElement(new DrumElement("/n1.wav", "audio/x-wav", t)) ;
+			al_drum_setup.addElement(new DrumElement("/n2.wav", "audio/x-wav", t)) ;
+		} catch(IOException ioe) {
+			ppp(ioe.getMessage()) ;
+		} catch(MediaException me) {
+			ppp(me.getMessage()) ;
+		}
+		
+	}
+
+	private void ppp(String s) {
+		System.out.println(s);
 	}
 }
