@@ -1,0 +1,44 @@
+This is a metronome program supposed to be run on cell phones.
+
+It is a simple program, just to have a decent set of controls 
+over the rythm.  I have no intention to fill it with white 
+elephant features, just the bare necessity for music people 
+who still needs such a helper device.
+
+Motivation
+
+I started writing this program because my son and I were in need 
+of a metronome, as we were told by our guitar master.  Looking for 
+a hardware version of a metronome, was not an option, and I found
+no freeware version of a cell program to work with.  I decided that,
+being able to write programs, I should not pay any amount of money
+for the sake of convenience to buy a product of this kind, but try
+to write one myself, one that should be free of charge.  I was 
+thinking also at people out there being able to use my program, if
+they find it appropriate to their needs.
+
+This is the first time approaching J2ME API, and I found a lot 
+difficult entering this, for me, new world.  For someone who tries 
+this for the first time, I would reccomend the links bellow.
+
+I found extremly useful the series of tutorial links from 
+
+ http://www.roseindia.net/j2me/index.shtml
+
+after first trying a couple of other links, such as:
+
+ http://www.javaworld.com/javaworld/jw-05-2005/jw-0502-midlet.html?page=1
+
+or 
+
+ http://developers.sun.com/mobility/midp/articles/wtoolkit/
+
+This program is free software, as you may read in LICENSE file, use 
+and distribution is permitted provided you mention the author.
+It's subscribing the GPL 3.0 License.
+
+CREDITS:
+
+I am using for now a sound from j2me-tk/AudioDemo application, bark.wav.
+I'll create the necessary appropriate sound in time, to substitute
+this one.
