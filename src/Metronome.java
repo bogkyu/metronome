@@ -1,3 +1,22 @@
+/*
+ *  Metronome MIDlet program
+ *  Copyright (C) 2010 Bogdan Creanga
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see http://www.gnu.org/licenses/
+ *
+ *  Contact author at: bogdancreanga@yahoo.com
+*/
 import java.io.*;
 import java.util.Vector;
 import javax.microedition.lcdui.*;
@@ -8,50 +27,43 @@ import javax.microedition.midlet.*;
 public class Metronome extends MIDlet
 implements CommandListener
 {
+	private static final String lbl_Exit  = "Exit" ;
 	private static final String lbl_Start = "Start" ;
 	private static final String lbl_Stop  = "Stop" ;
 	private Vector al_drum_setup ;
 	private Form f = new Form("Metronome") ;
 	Command startCommand = new Command(lbl_Start, Command.SCREEN, 0) ;
 	Command stopCommand  = new Command(lbl_Stop , Command.SCREEN, 0) ;
-	Command exitCommand  = new Command("Exit"   , Command.EXIT  , 0) ;
-	TextField tick       = new TextField("Tick:", "", 5, TextField.NUMERIC);
-	int index_start_stop = 0 ;
+	Command exitCommand  = new Command(lbl_Exit , Command.EXIT  , 0) ;
+	TextField tick       = new TextField("Tick:", "", 5, TextField.NUMERIC) ;
 
 	private volatile boolean b_metronome_on = false ;
 
 	public Metronome() {
 		al_drum_setup = new Vector(10) ;
 	}
-
 	public void startApp(){
-		// GUI
 		displayGUI() ;
 	}
-
 	public void pauseApp(){}
 
-	public void destroyApp(boolean unconditional){}
-
+	public void destroyApp(boolean unconditional){
+		notifyDestroyed() ;
+	}
 	private void displayGUI() {
 		Display display = Display.getDisplay(this);
-		//Form 
-		f.addCommand(exitCommand);
-		index_start_stop = f.size() ;
-		f.addCommand(startCommand);
-		//f.addCommand(stopCommand);
+		f.addCommand(exitCommand) ;
+		f.addCommand(startCommand) ;
 		tick.setString("") ;
 		tick.insert("60", 0 ) ;
 		f.append(tick) ;
-		f.setCommandListener(this);
+		f.setCommandListener(this) ;
 		display.setCurrent(f) ;
 	}
+	public void commandAction(Command c, Displayable s) {
+		if (c.getCommandType() == Command.EXIT)
+			notifyDestroyed() ;
 
-	
-	public void commandAction(Command c, Displayable s) { 
-		if (c.getCommandType() == Command.EXIT) 
-			notifyDestroyed(); 
-    	
 		String label = c.getLabel() ;
 	    if( label.equals(lbl_Start)) {
 			constructList() ;
@@ -62,17 +74,16 @@ implements CommandListener
 			f.addCommand(stopCommand);
 		} else if( label.equals(lbl_Stop)) {
 			b_metronome_on = false ;
-			//displayGUI() ;
 			f.removeCommand(stopCommand) ;
-			f.addCommand(startCommand);
+			f.addCommand(startCommand) ;
 		}
 	}
-
 	private class DrumElement {
 		Player m_p ;
 		long duration ;
-		
-		public DrumElement(String filename, String media_descr, long time) throws MediaException , IOException {
+
+		public DrumElement(String filename, String media_descr, long time)
+		throws MediaException, IOException {
 			m_p = Manager.createPlayer(
 				getClass().getResourceAsStream(filename)
 				, media_descr) ;
@@ -80,7 +91,7 @@ implements CommandListener
 			m_p.prefetch() ;
 			duration = time ;
 		}
-		
+
 		public void play() {
 			try {
 				m_p.start() ;
@@ -90,12 +101,11 @@ implements CommandListener
 		}
 		public long time() { return duration ; }
 	}
-
-	private class MetronomeThread implements Runnable {
+	private class MetronomeThread
+	implements Runnable {
 		Vector al_drums ;
 		DrumElement [] list ;
 		public MetronomeThread(Vector a) {
-			// shallow clone
 			list = new DrumElement[a.size()] ;
 			for( int i=a.size() ; --i>=0 ; )
 				list[i] = (DrumElement) a.elementAt(i) ;
@@ -106,7 +116,6 @@ implements CommandListener
 			while ( b_metronome_on ) {
 				for( int i=list.length; --i>=0 ; ) {
 					list[i].play() ;
-					//f.append(".") ;
 					Thread.sleep(list[i].time()) ;
 				}
 			}
@@ -116,7 +125,6 @@ implements CommandListener
 			}
 		}
 	}
-
 	private void constructList() {
 		try {
 			long t = Integer.parseInt(tick.getString()) ;
@@ -135,9 +143,7 @@ implements CommandListener
 		} catch(MediaException me) {
 			ppp(me.getMessage()) ;
 		}
-		
 	}
-
 	private void ppp(String s) {
 		System.out.println(s);
 	}
